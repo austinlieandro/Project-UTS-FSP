@@ -21,10 +21,24 @@
             <th>Peserta</th>
             <?php 
                 $sql = "SELECT * FROM matakuliah";
+                $sql2 = "select m.nama as 'nm_mh',m.nrp,mk.nama as 'nm_mk',mk.kode,p.nilai from mahasiswa m LEFT JOIN peserta p on m.nrp=p.nrp RIGHT JOIN matakuliah mk on mk.kode=p.kode";
                 $res = $conn->query($sql);
 
+                $namaMk = "";
+                $namaMh = "" ;
+                $jumMk = 0;
+                $jumMh = 0;
+
                 while ($row = $res->fetch_assoc()){
-                    echo "<th>".$row['kode']."-".$row['nama']."</th>";
+                    if($namaMk != $row['nama']){
+                        echo "<th>".$row['kode']."-".$row['nama']."</th>";
+                        $namaMk = $row['nama'];
+                        $jumMk += 1;
+                        // if($namaMh != $row['nm_mh']){
+                        //     $namaMh = $row['nm_mh']; 
+                        //     $jumMh += 1;
+                        // }
+                    }
                 }
                 
             ?>
@@ -34,12 +48,31 @@
             $res1 = $conn->query($sql1);
 
             while ($row1 = $res1->fetch_assoc()){
+                $nrp = $row1['nrp'];
+                $data = 0;
+                $current = 1;
                 echo "<tr><td>".$row1['nrp']."-".$row1['nama']."</td>";
-                for($i=1; $i<=$res->num_rows;$i++){
-                    echo "<td><input type='txt$i'></td>";
+                $sql3 = "SELECT m.nama as 'nm_mh', p.kode as 'nm_mk', p.nilai FROM peserta p LEFT JOIN mahasiswa m ON p.nrp = m.nrp WHERE m.nrp = '$nrp'";
+                
+                $sql4 = "SELECT mk.nama as 'nm_mk', m.nama as 'nm_mh', p.nilai FROM matakuliah mk LEFT JOIN peserta p ON p.kode = mk.kode LEFT JOIN mahasiswa m ON m.nrp = p.nrp";
+
+                $res2 = $conn->query($sql3);
+
+                while ($row2 = $res2->fetch_assoc()){
+                    echo "<td><input type='txt' value=".$row2['nilai']." name='txt".$row1['nama']."-$current'></td>";
+                    $data += 1;
+                    $current = $data + 1;
                 }
+                $range = 5 - $data;
+                for ($i=0; $i<$range; $i++){
+                    echo "<td><input type='txt' value='-' name='txt".$row1['nama']."-$current'></td>";
+                    $current += 1;
+                }
+                $current = 1;
+                echo "</tr>";
             }
         ?>
     </table>
+    <input type="button" value="Simpan" name="btnSimpan" id="btnSimpan">
 </body>
 </html>

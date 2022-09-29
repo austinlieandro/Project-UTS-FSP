@@ -55,7 +55,7 @@
             <th>AB</th>
             <th>A</th>
             <?php
-                $sql1 = "SELECT * FROM peserta WHERE kode = ?";
+                $sql1 = "SELECT m.nama,p.nrp,p.nilai FROM peserta p INNER JOIN mahasiswa m ON m.nrp=p.nrp WHERE p.kode = ?";
                 $stmt1 = $conn->prepare($sql1);
                 $stmt1->bind_param('s', $kodeMatkul);
                 $stmt1->execute();
@@ -70,9 +70,10 @@
                 }
                 else
                 {    while ($row1 = $res1->fetch_assoc()) {
-                        $kode = $row1['kode'];
+                        //$kode = $row1['kode'];
                         $nrp = $row1['nrp'];
                         $nilai = $row1['nilai'];
+                        $nama = $row1['nama'];
                         $kolom = 1;
                         echo "<tr>";
                         if ($nilai >= 81) {
@@ -92,7 +93,7 @@
                         }
                         for ($i = 0; $i < 8; $i++) {
                             if ($i == 0) {
-                                echo "<td>$nrp-$kode</td>";
+                                echo "<td>$nrp-$nama</td>";
                             } else if ($i % $kolom == 0) {
                                 echo "<td>$nilai</td>";
                             } else {
@@ -105,7 +106,7 @@
                 
             ?>
         </table>
-        <input type="button" name="btnEdit" value="Ubah Peserta">
+        <input type="button" name="btnEdit" value="Ubah Peserta" id="btnEdit">
     </form>
     <script type="text/javascript" src="jq.js"></script>
 </body>

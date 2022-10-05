@@ -38,7 +38,6 @@
                         $namaMk = $row['nama'];
                         $jumMk += 1;
                     }
-                    
                 ?>
             </tr>
             <?php 
@@ -49,6 +48,7 @@
                     $nrp = $row1['nrp'];
                     $data = 0;
                     $current = 1;
+
                     echo "<tr><td>".$row1['nrp']."-".$row1['nama']."</td>";
                     $sql3 = "SELECT m.nama as 'nm_mh', p.kode as 'nm_mk', p.nilai FROM peserta p LEFT JOIN mahasiswa m ON p.nrp = m.nrp WHERE m.nrp = '$nrp'";
                     

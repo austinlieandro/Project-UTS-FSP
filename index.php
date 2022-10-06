@@ -3,10 +3,10 @@
     $conn = new mysqli("localhost", "root", "", "fsputspro");
 
     require("class/matakuliah.php");
-    require("class/peserta.php");
+    
 
     $mk = new Matakuliah("localhost","root","","fsputspro");
-    $peserta = new Peserta("localhost","root","","fsputspro");
+    //$peserta = new Peserta("localhost","root","","fsputspro");
 
     if (isset($_GET['btnpilih'])) {
         //$link = "#";
@@ -69,8 +69,8 @@
                 $stmt1->execute();
                 $res1 = $stmt1->get_result();
 
-                $resp = $peserta->GetPeserta($kodeMatkul);
-                if($resp->num_rows < 1){
+                
+                if($res1->num_rows < 1){
                     if($kodeMatkul == 1){
                         echo "<tr><td colspan='8'>Mata Kuliah Belum Ditentukan</td></tr>";
                     }

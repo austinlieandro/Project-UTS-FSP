@@ -51,6 +51,9 @@
                     $current = 1;
 
                     echo "<tr><td>".$row1['nrp']."-".$row1['nama']."</td>";
+                    for ($i = 0; $i < $res->num_rows; $i++){
+
+                    }
                     $sql3 = "SELECT m.nama as 'nm_mh', p.kode as 'nm_mk', p.nilai FROM peserta p LEFT JOIN mahasiswa m ON p.nrp = m.nrp WHERE m.nrp = '$nrp'";
                     
                     $sql4 = "SELECT mk.nama as 'nm_mk', m.nama as 'nm_mh',mk.kode, p.nilai FROM matakuliah mk LEFT JOIN peserta p ON p.kode = mk.kode LEFT JOIN mahasiswa m ON m.nrp = p.nrp WHERE m.nrp = $nrp";

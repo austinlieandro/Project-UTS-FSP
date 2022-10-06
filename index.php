@@ -1,6 +1,13 @@
 <?php
     $link = "#";
     $conn = new mysqli("localhost", "root", "", "fsputspro");
+
+    require("class/matakuliah.php");
+    require("class/peserta.php");
+
+    $mk = new Matakuliah("localhost","root","","fsputspro");
+    $peserta = new Peserta("localhost","root","","fsputspro");
+
     if (isset($_GET['btnpilih'])) {
         //$link = "#";
         $kodeMatkul = $_GET['cmbMataKuliah'];
@@ -32,8 +39,9 @@
         <select name="cmbMataKuliah" id="">
             <option value="1">--Pilih Mata Kuliah--</option>
             <?php
+            
             $sql = "SELECT * FROM matakuliah";
-            $res = $conn->query($sql);
+            $res = $mk->GetMatakuliah();
             while ($row = $res->fetch_assoc()) {
                 if ($kodeMatkul == $row["kode"]) {
                     echo "<option value='" . $row['kode'] . "' selected>" . $row['nama'] . "</option>";
@@ -60,7 +68,9 @@
                 $stmt1->bind_param('s', $kodeMatkul);
                 $stmt1->execute();
                 $res1 = $stmt1->get_result();
-                if($res1->num_rows < 1){
+
+                $resp = $peserta->GetPeserta($kodeMatkul);
+                if($resp->num_rows < 1){
                     if($kodeMatkul == 1){
                         echo "<tr><td colspan='8'>Mata Kuliah Belum Ditentukan</td></tr>";
                     }

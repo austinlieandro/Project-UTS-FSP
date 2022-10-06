@@ -41,8 +41,9 @@
                 ?>
             </tr>
             <?php 
-                $sql1 = "SELECT * FROM mahasiswa";
-                $res1 = $conn->query($sql1);
+                require("class/mahasiswa.php");
+                $mh = new mahasiswa("localhost","root","","fsputspro");
+                $res1 = $mh->GetMahasiswa();
     
                 while ($row1 = $res1->fetch_assoc()){
                     $nrp = $row1['nrp'];
@@ -52,12 +53,12 @@
                     echo "<tr><td>".$row1['nrp']."-".$row1['nama']."</td>";
                     $sql3 = "SELECT m.nama as 'nm_mh', p.kode as 'nm_mk', p.nilai FROM peserta p LEFT JOIN mahasiswa m ON p.nrp = m.nrp WHERE m.nrp = '$nrp'";
                     
-                    //$sql4 = "SELECT mk.nama as 'nm_mk', m.nama as 'nm_mh', p.nilai FROM matakuliah mk LEFT JOIN peserta p ON p.kode = mk.kode LEFT JOIN mahasiswa m ON m.nrp = p.nrp";
+                    $sql4 = "SELECT mk.nama as 'nm_mk', m.nama as 'nm_mh',mk.kode, p.nilai FROM matakuliah mk LEFT JOIN peserta p ON p.kode = mk.kode LEFT JOIN mahasiswa m ON m.nrp = p.nrp WHERE m.nrp = $nrp";
     
-                    $res2 = $conn->query($sql3);
+                    $res2 = $conn->query($sql4);
     
                     while ($row2 = $res2->fetch_assoc()){
-                        echo "<td><input type='txt' value=".$row2['nilai']." name='txt".$row1['nama']."-$current'></td>";
+                        echo "<td><input type='txt' value=".$row2['nilai']." name='txt".$row1['nama']."-".$row2['kode']."'></td>";
                         $data += 1;
                         $current = $data + 1;
                     }

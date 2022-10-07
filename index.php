@@ -1,17 +1,17 @@
 <?php
-    $link = "#";
-    $conn = new mysqli("localhost", "root", "", "fsputspro");
-
-    require("class/matakuliah.php");
-    
+    require_once("class/matakuliah.php");
+    require_once("class/peserta.php");
 
     $mk = new Matakuliah("localhost","root","","fsputspro");
-    //$peserta = new Peserta("localhost","root","","fsputspro");
+    $peserta = new Peserta("localhost","root","","fsputspro");
 
     if (isset($_GET['btnpilih'])) {
-        //$link = "#";
         $kodeMatkul = $_GET['cmbMataKuliah'];
     }
+    else{
+        $kodeMatkul = 1;
+    }
+    
 
 ?>
 <!DOCTYPE html>
@@ -40,7 +40,6 @@
             <option value="1">--Pilih Mata Kuliah--</option>
             <?php
             
-            $sql = "SELECT * FROM matakuliah";
             $res = $mk->GetMatakuliah();
             while ($row = $res->fetch_assoc()) {
                 if ($kodeMatkul == $row["kode"]) {
@@ -63,13 +62,7 @@
             <th>AB</th>
             <th>A</th>
             <?php
-                $sql1 = "SELECT m.nama,p.nrp,p.nilai FROM peserta p INNER JOIN mahasiswa m ON m.nrp=p.nrp WHERE p.kode = ?";
-                $stmt1 = $conn->prepare($sql1);
-                $stmt1->bind_param('s', $kodeMatkul);
-                $stmt1->execute();
-                $res1 = $stmt1->get_result();
-
-                
+                $res1 = $peserta->GetPeserta($kodeMatkul);
                 if($res1->num_rows < 1){
                     if($kodeMatkul == 1){
                         echo "<tr><td colspan='8'>Mata Kuliah Belum Ditentukan</td></tr>";
@@ -80,7 +73,6 @@
                 }
                 else
                 {    while ($row1 = $res1->fetch_assoc()) {
-                        //$kode = $row1['kode'];
                         $nrp = $row1['nrp'];
                         $nilai = $row1['nilai'];
                         $nama = $row1['nama'];
@@ -104,7 +96,7 @@
                         for ($i = 0; $i < 8; $i++) {
                             if ($i == 0) {
                                 echo "<td>$nrp-$nama</td>";
-                            } else if ($i % $kolom == 0) {
+                            } else if ($i / $kolom == 1) {
                                 echo "<td>$nilai</td>";
                             } else {
                                 echo "<td></td>";

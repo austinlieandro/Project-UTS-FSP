@@ -18,13 +18,36 @@
         }
         public function CekNilai($nrp,$kode){
             $sql = "SELECT nilai FROM peserta WHERE nrp = $nrp and kode = $kode";
-            $res = mysqli_query($this->con,$sql);
-            $data = 0;
-            if (mysqli_num_rows($res)){
+            $res = $this->con->query($sql);
+            
+            if ($row = $res->fetch_assoc()) {
                 $data = 1;
+            }
+            else{
+                $data = 0;
             }
 
             return $data;
+        }
+        public function ExecuteDML($kode,$nrp,$nilai,$cmd){
+            if($cmd == "insert"){
+                $sql = "INSERT INTO peserta VALUES (?,?,?)";
+                $stmt = $this->con->prepare($sql);
+                $stmt->bind_param("ssd",$kode,$nrp,$nilai);
+                $stmt->execute();
+            }
+            else if($cmd == "update"){
+                $sql = "UPDATE peserta SET nilai = ? WHERE kode = ? AND nrp = ?";
+                $stmt = $this->con->prepare($sql);
+                $stmt->bind_param("dss",$nilai,$kode,$nrp);
+                $stmt->execute();
+            }
+            else if($cmd == "delete"){
+                $sql = "DELETE FROM peserta WHERE nrp = ? AND kode = ?";
+                $stmt = $this->con->prepare($sql);
+                $stmt->bind_param("ss", $nrp,$kode);
+                $stmt->execute();
+            }
         }
         public function __destruct()
         {

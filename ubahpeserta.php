@@ -5,12 +5,12 @@
     $mahasiswa = new Mahasiswa("localhost","root","","fsputspro");
     $peserta = new Peserta("localhost","root","","fsputspro");
     $conn = new mysqli("localhost","root","","fsputspro");
+    
     if(isset($_GET["btnSimpan"])){
-        //echo $_GET["kode"];
         $arrPeserta = array();
 
         foreach($_GET as $key => $val){
-            if (is_numeric($val) && (($val != null) || ($val != ""))){
+            if (is_numeric($val) || ($val == "-")){
                 $arr_nrp_kode = explode("-",$key);
                 $nrp1 = $arr_nrp_kode[0];
                 $kode1 = $arr_nrp_kode[1];
@@ -19,31 +19,27 @@
             }
         }
         foreach($arrPeserta as $p){
-            // if(!is_numeric($p[2])){
-            //     $sql = "DELETE FROM peserta WHERE nrp = ? AND kode = ?";
-            //     $stmt = $conn->prepare($sql);
-            //     $stmt->bind_param("ss", $p[1],$p[0]);
-            //     $stmt->execute();
-            // }
-            $res = $peserta->CekNilai($p[1],$p[0]);
-            // $num_row = $res->num_rows;
-            echo $res;
-            //echo "<br><br>";
+            if(!is_numeric($p[2])){
+                $peserta->ExecuteDML($p[0],$p[1],$p[2],"delete");
+            }
+            $sql = "SELECT nilai FROM peserta WHERE nrp ='".$p[1]."' and kode='".$p[0]."'";
+            $res = $conn->query($sql);
+            
+            if ($row = $res->fetch_assoc()) {
+                $data = 1;
+            }
+            else{
+                $data = 0;
+            }
+            // $data = $peserta->CekNilai($p[1],$p[0]);
             if(is_numeric($p[2])){
-                if($num_row > 0){
-                    $sql = "UPDATE peserta SET nilai = ? WHERE kode = ? AND nrp = ?";
-                    $stmt = $conn->prepare($sql);
-                    $stmt->bind_param("dss",$p[2],$p[0],$p[1]);
-                    $stmt->execute();
+                if($data > 0){
+                    $peserta->ExecuteDML($p[0],$p[1],$p[2],"update");
                 }
-                $sql = "INSERT INTO peserta VALUES (?,?,?)";
-                $stmt = $conn->prepare($sql);
-                    $stmt->bind_param("ssd",$p[0],$p[1],$p[2]);
-                    $stmt->execute();
+                $peserta->ExecuteDML($p[0],$p[1],$p[2],"insert");
             }
             
         }
-        print_r($arrPeserta);
     }
 ?>
 <!DOCTYPE html>
@@ -106,7 +102,7 @@
                     $counter = 0;
                     while ($row = $res->fetch_assoc()) {
                         $kode = $row['kode'];
-                        echo "<td><input type='number' value=".$row['nilai']." name='$nrp-$kode'></td>";
+                        echo "<td><input type='text' value=".$row['nilai']." name='$nrp-$kode'></td>";
                         $data += 1;
                         $current = $data;
                     }

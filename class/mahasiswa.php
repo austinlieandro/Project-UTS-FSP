@@ -1,5 +1,5 @@
 <?php
-    require("koneksi.php");
+    require_once("koneksi.php");
 
     class Mahasiswa extends Koneksi{
 

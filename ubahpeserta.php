@@ -1,9 +1,49 @@
 <?php
+    require_once("class/mahasiswa.php");
+    require_once("class/peserta.php");
+
+    $mahasiswa = new Mahasiswa("localhost","root","","fsputspro");
+    $peserta = new Peserta("localhost","root","","fsputspro");
     $conn = new mysqli("localhost","root","","fsputspro");
     if(isset($_GET["btnSimpan"])){
-        echo $_GET["kode"];
+        //echo $_GET["kode"];
         $arrPeserta = array();
-        
+
+        foreach($_GET as $key => $val){
+            if (is_numeric($val) && (($val != null) || ($val != ""))){
+                $arr_nrp_kode = explode("-",$key);
+                $nrp1 = $arr_nrp_kode[0];
+                $kode1 = $arr_nrp_kode[1];
+
+                array_push($arrPeserta,array($kode1,$nrp1,$val));
+            }
+        }
+        foreach($arrPeserta as $p){
+            // if(!is_numeric($p[2])){
+            //     $sql = "DELETE FROM peserta WHERE nrp = ? AND kode = ?";
+            //     $stmt = $conn->prepare($sql);
+            //     $stmt->bind_param("ss", $p[1],$p[0]);
+            //     $stmt->execute();
+            // }
+            $res = $peserta->CekNilai($p[1],$p[0]);
+            // $num_row = $res->num_rows;
+            echo $res;
+            //echo "<br><br>";
+            if(is_numeric($p[2])){
+                if($num_row > 0){
+                    $sql = "UPDATE peserta SET nilai = ? WHERE kode = ? AND nrp = ?";
+                    $stmt = $conn->prepare($sql);
+                    $stmt->bind_param("dss",$p[2],$p[0],$p[1]);
+                    $stmt->execute();
+                }
+                $sql = "INSERT INTO peserta VALUES (?,?,?)";
+                $stmt = $conn->prepare($sql);
+                    $stmt->bind_param("ssd",$p[0],$p[1],$p[2]);
+                    $stmt->execute();
+            }
+            
+        }
+        print_r($arrPeserta);
     }
 ?>
 <!DOCTYPE html>
@@ -27,7 +67,6 @@
                 <th>Peserta</th>
                 <?php 
                     $sql = "SELECT * FROM matakuliah";
-                    //$sql2 = "select m.nama as 'nm_mh',m.nrp,mk.nama as 'nm_mk',mk.kode,p.nilai from mahasiswa m LEFT JOIN peserta p on m.nrp=p.nrp RIGHT JOIN matakuliah mk on mk.kode=p.kode";
                     $res = $conn->query($sql);
     
                     $namaMk = "";
@@ -43,8 +82,6 @@
                 ?>
             </tr>
             <?php 
-                require("class/mahasiswa.php");
-                //require("class/matakuliah.php");
                 $mh = new mahasiswa("localhost","root","","fsputspro");
                 $res1 = $mh->GetMahasiswa();
 
@@ -68,31 +105,15 @@
 
                     $counter = 0;
                     while ($row = $res->fetch_assoc()) {
-                        echo "<td><input type='number' value=".$row['nilai'].">
-                        <input type='hidden' value='$nrp' name='nrp'>
-                        <input type='hidden' value='".$row['kode']."' name='kode'></td>";
+                        $kode = $row['kode'];
+                        echo "<td><input type='number' value=".$row['nilai']." name='$nrp-$kode'></td>";
                         $data += 1;
                         $current = $data;
                     }
-                    // for ($i = 0; $i < $res->num_rows; $i++){
-                    //     echo 
-                    // }
-                    // $sql3 = "SELECT m.nama as 'nm_mh', p.kode as 'nm_mk', p.nilai FROM peserta p LEFT JOIN mahasiswa m ON p.nrp = m.nrp WHERE m.nrp = '$nrp'";
-                    
-                    // $sql4 = "SELECT mk.nama as 'nm_mk', m.nama as 'nm_mh',mk.kode, p.nilai FROM matakuliah mk LEFT JOIN peserta p ON p.kode = mk.kode LEFT JOIN mahasiswa m ON m.nrp = p.nrp WHERE m.nrp = $nrp";
-    
-                    // $res2 = $conn->query($sql4);
-    
-                    // while ($row2 = $res2->fetch_assoc()){
-                    //     echo "<td><input type='txt' value=".$row2['nilai']." name='txt".$row1['nama']."-".$row2['kode']."'></td>";
-                    //     $data += 1;
-                    //     $current = $data + 1;
-                    // }
                     $range = 5 - $data;
                     for ($i=0; $i<$range; $i++){
-                        echo "<td><input type='text' value='-' name='nilai'>
-                        <input type='hidden' value='".$row1['nrp']."' name='nrp'>
-                        <input type='hidden' value='".$arrKode[$current]."' name='kode'></td>";
+                        $kode = $arrKode[$current];
+                        echo "<td><input type='text' value='-' name='$nrp-$kode'></td>";
                         $current += 1;
                     }
                     $current = 1;

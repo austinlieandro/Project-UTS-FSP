@@ -2,6 +2,8 @@
     $conn = new mysqli("localhost","root","","fsputspro");
     if(isset($_GET["btnSimpan"])){
         echo $_GET["kode"];
+        $arrPeserta = array();
+        
     }
 ?>
 <!DOCTYPE html>

@@ -17,11 +17,5 @@
         {
             $this->con->close();
         }
-        // public function GetKodeMk(){
-        //     $sql = "SELECT nama FROM matakuliah";
-        //     $res = $this->con->query($sql);
-
-        //     while ($row = $res->fetch()
-        // }
     }
 ?>

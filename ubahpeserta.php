@@ -6,12 +6,11 @@
     $mahasiswa = new Mahasiswa("localhost","root","","fsputspro");
     $matakuliah = new Matakuliah("localhost","root","","fsputspro");
     $peserta = new Peserta("localhost","root","","fsputspro");
-    $conn = new mysqli("localhost","root","","fsputspro");
     
-    if(isset($_GET["btnSimpan"])){
+    if(isset($_POST["btnSimpan"])){
         $arrPeserta = array();
 
-        foreach($_GET as $key => $val){
+        foreach($_POST as $key => $val){
             if (is_numeric($val) || ($val == "")){
                 $arr_nrp_kode = explode("-",$key);
                 $nrp1 = $arr_nrp_kode[0];
@@ -20,7 +19,6 @@
                 array_push($arrPeserta,array($kode1,$nrp1,$val));
             }
         }
-        print_r($arrPeserta);
         foreach($arrPeserta as $p){
             if(!is_numeric($p[2])){
                 $peserta->ExecuteDML($p[0],$p[1],$p[2],"delete");
@@ -34,9 +32,8 @@
             else{
                 $data = 0;
             }
-            // $data = $peserta->CekNilai($p[1],$p[0]);
             if(is_numeric($p[2])){
-                if($data > 0){
+                if($peserta->CekNilai($p[0],$p[1])){
                     $peserta->ExecuteDML($p[0],$p[1],$p[2],"update");
                 }
                 $peserta->ExecuteDML($p[0],$p[1],$p[2],"insert");
@@ -59,7 +56,7 @@
     </style>
 </head>
 <body>
-    <form action="#" method="get">
+    <form action="#" method="post">
         <a href="index.php">Balik</a>
         <table>
             <tr>
@@ -89,7 +86,7 @@
                     $data = 0;
 
                     echo "<tr><td>".$row1['nrp']."-".$row1['nama']."</td>";
-                    
+
                     for($i=0; $i<count($arrKode); $i++){
                         foreach($arr_peserta as $value){
                             if($value[0] == $arrKode[$i] && $value[1] == $nrp){

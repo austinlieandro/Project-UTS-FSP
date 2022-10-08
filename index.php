@@ -5,8 +5,8 @@
     $mk = new Matakuliah("localhost","root","","fsputspro");
     $peserta = new Peserta("localhost","root","","fsputspro");
 
-    if (isset($_GET['btnpilih'])) {
-        $kodeMatkul = $_GET['cmbMataKuliah'];
+    if (isset($_POST['btnpilih'])) {
+        $kodeMatkul = $_POST['cmbMataKuliah'];
     }
     else{
         $kodeMatkul = 1;
@@ -34,7 +34,7 @@
 </head>
 
 <body>
-    <form action="#" method="get">
+    <form action="#" method="post">
         Mata Kuliah :
         <select name="cmbMataKuliah" id="">
             <option value="1">--Pilih Mata Kuliah--</option>

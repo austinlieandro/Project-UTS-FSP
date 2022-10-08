@@ -30,18 +30,14 @@
             
             return $data_peserta;
         }
-        public function CekNilai($nrp,$kode){
-            $sql = "SELECT nilai FROM peserta WHERE nrp = $nrp and kode = $kode";
+        public function CekNilai($kode,$nrp){
+            $sql = "SELECT * FROM peserta WHERE nrp = $nrp and kode = '$kode'";
             $res = $this->con->query($sql);
             
             if ($row = $res->fetch_assoc()) {
-                $data = 1;
+                return true;
             }
-            else{
-                $data = 0;
-            }
-
-            return $data;
+            return false;
         }
         public function ExecuteDML($kode,$nrp,$nilai,$cmd){
             if($cmd == "insert"){

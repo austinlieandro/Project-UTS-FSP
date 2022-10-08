@@ -1,8 +1,10 @@
 <?php
     require_once("class/mahasiswa.php");
+    require_once("class/matakuliah.php");
     require_once("class/peserta.php");
 
     $mahasiswa = new Mahasiswa("localhost","root","","fsputspro");
+    $matakuliah = new Matakuliah("localhost","root","","fsputspro");
     $peserta = new Peserta("localhost","root","","fsputspro");
     $conn = new mysqli("localhost","root","","fsputspro");
     
@@ -10,7 +12,7 @@
         $arrPeserta = array();
 
         foreach($_GET as $key => $val){
-            if (is_numeric($val) || ($val == "-")){
+            if (is_numeric($val) || ($val == "")){
                 $arr_nrp_kode = explode("-",$key);
                 $nrp1 = $arr_nrp_kode[0];
                 $kode1 = $arr_nrp_kode[1];
@@ -18,6 +20,7 @@
                 array_push($arrPeserta,array($kode1,$nrp1,$val));
             }
         }
+        print_r($arrPeserta);
         foreach($arrPeserta as $p){
             if(!is_numeric($p[2])){
                 $peserta->ExecuteDML($p[0],$p[1],$p[2],"delete");
@@ -62,59 +65,46 @@
             <tr>
                 <th>Peserta</th>
                 <?php 
-                    $sql = "SELECT * FROM matakuliah";
-                    $res = $conn->query($sql);
+                    $res = $matakuliah->GetMatakuliah();
     
                     $namaMk = "";
                     $namaMh = "" ;
                     $jumMk = 0;
-                    $jumMh = 0;
     
                     while ($row = $res->fetch_assoc()){
+                        $kode = $row['kode'];
+                        $nama = $row['nama'];
                         echo "<th>".$row['kode']."-".$row['nama']."</th>";
-                        $namaMk = $row['nama'];
                         $jumMk += 1;
                     }
                 ?>
             </tr>
             <?php 
-                $mh = new mahasiswa("localhost","root","","fsputspro");
-                $res1 = $mh->GetMahasiswa();
+                $res1 = $mahasiswa->GetMahasiswa();
+                $arrKode = $matakuliah->GetKodeMk();
+                $arr_peserta = $peserta->GetPeserta();
 
-                $sql = "SELECT kode FROM matakuliah";
-                $res = $conn->query($sql);
-                $arrKode = array();
-
-                while ($row = $res->fetch_assoc()){
-                    $kodeMk = $row['kode'];
-                    $arrKode[] = $kodeMk;
-                }
-    
                 while ($row1 = $res1->fetch_assoc()){
                     $nrp = $row1['nrp'];
                     $data = 0;
-                    $current = 0;
 
                     echo "<tr><td>".$row1['nrp']."-".$row1['nama']."</td>";
-                    $sqll = "SELECT * FROM peserta WHERE nrp = $nrp";
-                    $res = $conn->query($sqll);
-
-                    $counter = 0;
-                    while ($row = $res->fetch_assoc()) {
-                        $kode = $row['kode'];
-                        echo "<td><input type='text' value=".$row['nilai']." name='$nrp-$kode'></td>";
-                        $data += 1;
-                        $current = $data;
+                    
+                    for($i=0; $i<count($arrKode); $i++){
+                        foreach($arr_peserta as $value){
+                            if($value[0] == $arrKode[$i] && $value[1] == $nrp){
+                                echo "<td><input type='text' value='".$value[2]."' name='$nrp-".$arrKode[$i]."'></td>";
+                                $data+=1;
+                            }
+                        }
+                        if($data == $i){
+                            echo "<td><input type='text' value='-' name='$nrp-".$arrKode[$data]."'></td>";
+                            $data+=1;
+                        }
                     }
-                    $range = 5 - $data;
-                    for ($i=0; $i<$range; $i++){
-                        $kode = $arrKode[$current];
-                        echo "<td><input type='text' value='-' name='$nrp-$kode'></td>";
-                        $current += 1;
-                    }
-                    $current = 1;
                     echo "</tr>";
                 }
+                
             ?>
         </table>
         <input type="submit" value="Simpan" name="btnSimpan" id="btnSimpan">

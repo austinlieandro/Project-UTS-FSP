@@ -62,7 +62,7 @@
             <th>AB</th>
             <th>A</th>
             <?php
-                $res1 = $peserta->GetPeserta($kodeMatkul);
+                $res1 = $peserta->GetPesertaByKode($kodeMatkul);
                 if($res1->num_rows < 1){
                     if($kodeMatkul == 1){
                         echo "<tr><td colspan='8'>Mata Kuliah Belum Ditentukan</td></tr>";
